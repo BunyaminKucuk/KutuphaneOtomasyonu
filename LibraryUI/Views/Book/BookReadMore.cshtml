@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Entity.Concrete.Book>
+
+@{
+    ViewData["Title"] = "BookReadMore";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<section class="banner-bottom">
+    <!--/blog-->
+    <div class="container">
+        <div class="row">
+            <!--left-->
+            <div class="col-lg-8 left-blog-info-w3layouts-agileits text-left">
+                @foreach (var item in Model)
+                {
+                    <div class="blog-grid-top">
+                        <div class="b-grid-top">
+                            <div class="blog_info_left_grid">
+                                <a href="single.html">
+                                    <img src="@item.BookImageUrl" class="img-fluid" alt="">
+                                </a>
+                            </div>
+                            <div class="blog-info-middle">
+                                <ul>
+                                    <li>
+                                        <a href="#">
+                                            <i class="far fa-calendar-alt"></i> @(((DateTime)item.CreatedOnUtc).ToString("dd.MM.yyyy"))
+                                        </a>
+                                    </li>
+                                    <li class="mx-2">
+                                        <a href="#">
+                                            <i class="far fa-thumbs-up"></i> 0 Likes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="far fa-comment"></i> 0 Comments
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h3>
+                            <a href="single.html">@item.BookName </a>
+                        </h3>
+                        <p>@item.BookDescription</p>
+                        <a href="/Book/Index" class="btn btn-primary read-m">Blog Listesi</a>
+                        <a href="/Book/TypeOfBook" class="btn btn-primary read-m">Kitabı Al</a>
+                    </div>
+                }
+            </div>
+            <!--//left-->
+        </div>
+    </div>
+</section>
