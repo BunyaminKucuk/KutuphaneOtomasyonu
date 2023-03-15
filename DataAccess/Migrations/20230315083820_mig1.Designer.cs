@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20230311154051_mig")]
-    partial class mig
+    [Migration("20230315083820_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,7 +28,13 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("BookDescription")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("BookISBN")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BookImageUrl")
                         .HasColumnType("longtext");
 
                     b.Property<string>("BookName")
@@ -52,19 +58,33 @@ namespace DataAccess.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("tinyint(1)");
 
+                    b.HasKey("Id");
+
+                    b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("Entity.Concrete.TakeOfBook", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("EndOnUtc")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("StartOnUtc")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.HasKey("UserId", "BookId");
 
-                    b.HasKey("Id");
+                    b.HasIndex("Id");
 
-                    b.ToTable("Books");
+                    b.ToTable("TakeOfBooks");
                 });
 
             modelBuilder.Entity("Entity.Concrete.User", b =>
@@ -318,6 +338,25 @@ namespace DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Entity.Concrete.TakeOfBook", b =>
+                {
+                    b.HasOne("Entity.Concrete.Book", "Book")
+                        .WithMany("TakeOfBooks")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Entity.Concrete.User", "User")
+                        .WithMany("TakeOfBooks")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Entity.Identity.ApplicationUserRole", b =>
                 {
                     b.HasOne("Entity.Identity.ApplicationRole", "Role")
@@ -371,6 +410,16 @@ namespace DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Entity.Concrete.Book", b =>
+                {
+                    b.Navigation("TakeOfBooks");
+                });
+
+            modelBuilder.Entity("Entity.Concrete.User", b =>
+                {
+                    b.Navigation("TakeOfBooks");
                 });
 
             modelBuilder.Entity("Entity.Identity.ApplicationRole", b =>

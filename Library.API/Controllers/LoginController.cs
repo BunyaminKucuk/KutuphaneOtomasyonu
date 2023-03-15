@@ -51,9 +51,10 @@ namespace Library.API.Controllers
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
-
+                //vs kapat tekrar aç tekrar eder
                 var authClaims = new List<Claim>
                 {
+                    //ikidir continue yerine stack fire diye bişeye basıyon amk dikkat et abi f11 basıyorum olamyaınca nbasıyorum
                     new Claim(ClaimTypes.Name, user.UserName),
                     //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };

@@ -23,7 +23,7 @@ namespace Library.API.Controllers
             _roleManager = roleManager;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("GetBookList")]
         public IList<BookModel> GetBookList()
         {
@@ -160,14 +160,14 @@ namespace Library.API.Controllers
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("AddBookToUser")]
-        public async void AddBookToUser(int bookId, int userId)
+        public async void AddBookToUser(TakeOfBook model)
         {
             try
             {
                 //var userGuid = HttpContext.User.Claims.Where(x => x.Type == "UserGuid").FirstOrDefault();
                 //var user  = unitOfWork.User.GetListAll().Where(x => x.Id == userGuid.Value).FirstOrDefault();
-                var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == userId).FirstOrDefault();
-                var bookCheck = _unitOfWork.Book.GetListAll().Where(x => x.Id == bookId).FirstOrDefault();
+                var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == model.UserId).FirstOrDefault();
+                var bookCheck = _unitOfWork.Book.GetListAll().Where(x => x.Id == model.BookId).FirstOrDefault();
 
                 if (userCheck == null)
                 {
@@ -186,9 +186,11 @@ namespace Library.API.Controllers
 
                 TakeOfBook takeOfBook = new TakeOfBook();
 
-                takeOfBook.UserId = userId;
-                takeOfBook.BookId = bookId;
-                takeOfBook.StartOnUtc=DateTime.Now;
+                takeOfBook.UserId = model.UserId;
+                takeOfBook.BookId = model.BookId;
+                takeOfBook.StartOnUtc = DateTime.Now;
+                takeOfBook.EndOnUtc = DateTime.Now;
+                takeOfBook.Id = 1;
 
                 _unitOfWork.TakeOfBook.Insert(takeOfBook);
                 _unitOfWork.SaveChanges();

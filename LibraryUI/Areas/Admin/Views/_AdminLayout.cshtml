@@ -12,18 +12,17 @@
 
     <title>INSPINIA | Static Tables</title>
 
-    <link href="~/Tema/prupleadmin/css/bootstrap.min.css" rel="stylesheet">
-    <link href="~/Tema/prupleadmin/font-awesome/css/font-awesome.css" rel="stylesheet">
-    <link href="~/Tema/prupleadmin/css/plugins/iCheck/custom.css" rel="stylesheet">
-    <link href="~/Tema/prupleadmin/css/animate.css" rel="stylesheet">
-    <link href="~/Tema/prupleadmin/css/style.css" rel="stylesheet">
+    <link href="~/Tema/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/Tema/admin/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="~/Tema/admin/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="~/Tema/admin/css/animate.css" rel="stylesheet">
+    <link href="~/Tema/admin/css/style.css" rel="stylesheet">
 
 </head>
 
 <body>
-
     <div id="wrapper">
-        @*@await Html.PartialAsync("~/Views/Tema/prupleadmin/Tema/prupleadminNavbarPartial.cshtml")*@
+        @await Html.PartialAsync("~/Areas/Admin/Views/Dashboard/AdminNavbarPartial.cshtml")
         <div id="page-wrapper" class="gray-bg">
             <div class="row border-bottom">
                 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -37,7 +36,7 @@
                     </div>
                     <ul class="nav navbar-top-links navbar-right">
                         <li>
-                            <span class="m-r-sm text-muted welcome-message">Welcome to INSPINIA+ Tema/prupleadmin Theme.</span>
+                            <span class="m-r-sm text-muted welcome-message">Welcome to INSPINIA+ Admin Theme.</span>
                         </li>
                         <li class="dropdown">
                             <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
@@ -181,24 +180,24 @@
 
 
     <!-- Mainly scripts -->
-    <script src="~/Tema/prupleTema/prupleadmin/assets/js/jquery-3.1.1.min.js"></script>
-    <script src="~/Tema/prupleadmin/js/popper.min.js"></script>
-    <script src="~/Tema/prupleadmin/js/bootstrap.js"></script>
-    <script src="~/Tema/prupleadmin/js/plugins/metisMenu/jquery.metisMenu.js"></script>
-    <script src="~/Tema/prupleadmin/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="~/Tema/admin/js/jquery-3.1.1.min.js"></script>
+    <script src="~/Tema/admin/js/popper.min.js"></script>
+    <script src="~/Tema/admin/js/bootstrap.js"></script>
+    <script src="~/Tema/admin/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="~/Tema/admin/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 
     <!-- Peity -->
-    <script src="~/Tema/prupleadmin/js/plugins/peity/jquery.peity.min.js"></script>
+    <script src="~/Tema/admin/js/plugins/peity/jquery.peity.min.js"></script>
 
     <!-- Custom and plugin javascript -->
-    <script src="~/Tema/prupleadmin/js/inspinia.js"></script>
-    <script src="~/Tema/prupleadmin/js/plugins/pace/pace.min.js"></script>
+    <script src="~/Tema/admin/js/inspinia.js"></script>
+    <script src="~/Tema/admin/js/plugins/pace/pace.min.js"></script>
 
     <!-- iCheck -->
-    <script src="~/Tema/prupleadmin/js/plugins/iCheck/icheck.min.js"></script>
+    <script src="~/Tema/admin/js/plugins/iCheck/icheck.min.js"></script>
 
     <!-- Peity -->
-    <script src="~/Tema/prupleadmin//js/demo/peity-demo.js"></script>
+    <script src="~/Tema/admin/js/demo/peity-demo.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -208,7 +207,6 @@
             });
         });
     </script>
-    @await RenderSectionAsync("scripts")
 </body>
 
 </html>

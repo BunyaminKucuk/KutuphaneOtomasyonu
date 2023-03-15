@@ -1,0 +1,26 @@
+﻿@model Entity.Identity.ApplicationRole
+@{
+    ViewData["Title"] = "AddRoleToUser";
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+}
+
+<form class="form-group" method="post" enctype="multipart/form-data">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Role Ekle</h4>
+                <br />
+                <div class="forms-sample">
+                    <div class="form-group">
+                        <label for="exampleInputName1">Kullanıcı Adı </label>
+                        @*@Html.DropDownListFor(x=>x.Name,(List<SelectListItem>)ViewBag.cv,new {@class="form-control"})*@
+                        @Html.TextBoxFor(x=>x.Name,new {@class="form-control"})
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-gradient-primary mr-2">Kaydet</button>
+            </div>
+
+        </div>
+    </div>
+
+</form>

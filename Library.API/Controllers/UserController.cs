@@ -24,11 +24,11 @@ namespace Library.API.Controllers
         }
 
         [HttpGet("GetAllUsers")]
-        public List<ApplicationUser> GetAllUsers()
+        public List<User> GetAllUsers()
         {
             try
             {
-                return _userManager.Users.ToList();
+                return _unitOfWork.User.GetListAll();
             }
             catch (Exception ex)
             {
@@ -135,6 +135,7 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("AddRoleToUser")]
+        //public async void AddRoleToUser(List<string> roles, int userId)
         public async void AddRoleToUser(List<string> roles, int userId)
         {
             try

@@ -1,0 +1,21 @@
+﻿@using Entity.Identity
+@model List<ApplicationRole>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <th>Oluşturulma Tarihi</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <th>@item.Name</th>
+            <td>@(((DateTime)item.CreatedTime).ToString("dd.MM.yyyy"))</td>
+        </tr>
+    }
+</table>
+<a href="/Admin/Role/AddNewRole" class="btn btn-primary">Yeni Rol Oluştur</a>
