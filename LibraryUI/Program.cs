@@ -1,11 +1,14 @@
-using System.Text;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using DataAccess.Concrete;
+using DataAccess.Extensions;
 using Entity.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.OpenApi.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using DataAccess.Concrete;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +22,23 @@ builder.Services.AddControllersWithViews();
 //{
 //    x.LoginPath = "/Login/Index";
 //});
-
+var connnectionStrings = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<LibraryContext>(options =>
+{
+    options.UseMySql(connnectionStrings, ServerVersion.AutoDetect(connnectionStrings));
+});
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+    {
+        options.Password.RequiredLength = 1;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireDigit = false;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+    })
+    .AddEntityFrameworkStores<LibraryContext>()
+    .AddDefaultTokenProviders();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -42,12 +61,19 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminPolicy", policy =>
-        policy.RequireRole(RoleType.Admin.GetDisplayName(), RoleType.Customer.GetDisplayName(), RoleType.Librarian.GetDisplayName()));
+        policy.RequireRole(RoleType.Admin.GetDisplayName(), RoleType.Librarian.GetDisplayName()));
     options.AddPolicy("LibraryPolicy", policy =>
         policy.RequireRole(RoleType.Customer.GetDisplayName(), RoleType.Librarian.GetDisplayName()));
     options.AddPolicy("CustomerPolicy", policy =>
         policy.RequireRole(RoleType.Customer.GetDisplayName()));
 });
+
+
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+    .ConfigureContainer<ContainerBuilder>(builder =>
+    {
+        builder.RegisterModule(new AutofacResolver());
+    });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,10 +91,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapDefaultControllerRoute();
-
-app.MapControllerRoute(
-    name: "Admin",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

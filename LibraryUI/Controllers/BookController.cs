@@ -23,6 +23,7 @@ namespace LibraryUI.Controllers
             _httpContextAccessor = httpContextAccessor;
             //var response=_httpClient.GetAsync()
         }
+
         public async Task<IActionResult> Index()
         {
             var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Book/GetBookList");
@@ -38,7 +39,7 @@ namespace LibraryUI.Controllers
             return View(values);
         }
 
-
+        
         [HttpGet]
         public async Task<IActionResult> TakeOnBook()
         {
@@ -51,7 +52,7 @@ namespace LibraryUI.Controllers
             
             var token = HttpContext.User.FindFirst(ClaimTypes.Authentication).Value;
             TakeOfBook takeOfBook = new TakeOfBook();
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            //_httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var responseMessage = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/Book/AddBookToUser?bookId=" + model.UserId + "&userId=" + model.BookId), model);
 
 

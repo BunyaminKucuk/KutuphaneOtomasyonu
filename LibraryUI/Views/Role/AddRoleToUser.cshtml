@@ -1,7 +1,8 @@
-﻿@model Entity.Identity.ApplicationRole
+﻿@model Library.API.Controllers.AddRoleToUserModel
+
 @{
     ViewData["Title"] = "AddRoleToUser";
-    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <form class="form-group" method="post" enctype="multipart/form-data">
@@ -13,8 +14,9 @@
                 <div class="forms-sample">
                     <div class="form-group">
                         <label for="exampleInputName1">Kullanıcı Adı </label>
-                        @*@Html.DropDownListFor(x=>x.Name,(List<SelectListItem>)ViewBag.cv,new {@class="form-control"})*@
-                        @Html.TextBoxFor(x=>x.Name,new {@class="form-control"})
+                        @Html.HiddenFor(x=>x.User.Id,new {@class="form-control"})
+                        <label for="exampleInputName1">Rol Adı </label>
+                        @Html.DropDownListFor(x=>x.Role.Id,(List<SelectListItem>)ViewBag.cv,new {@class="form-control"})
                     </div>
                 </div>
                 <button type="submit" class="btn btn-gradient-primary mr-2">Kaydet</button>

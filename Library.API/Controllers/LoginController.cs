@@ -15,10 +15,16 @@ namespace Library.API.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
+        #region Fields
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+
+        #endregion
+
+        #region Ctor
 
         public LoginController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IConfiguration configuration, IUnitOfWork unitOfWork)
         {
@@ -28,23 +34,11 @@ namespace Library.API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        private JwtSecurityToken GetToken(List<Claim> authClaims)
-        {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
+        #endregion
 
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Tokens:Issuer"],
-                audience: _configuration["Tokens:Audience"],
-                expires: DateTime.Now.AddMinutes(120),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
-
-            return token;
-        }
+        #region Methods
 
         [HttpPost("Login")]
-        //[Route("Login")]
         public async Task<string> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
@@ -75,7 +69,6 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("Register")]
-        //[Route("Register")]
         public async Task<IActionResult> Register(RegisterModel model)
         {
             var userExists = await _userManager.FindByNameAsync(model.Username);
@@ -109,11 +102,22 @@ namespace Library.API.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
-        [HttpGet("Data")]
-        public async Task<IActionResult> Data()
+        private JwtSecurityToken GetToken(List<Claim> authClaims)
         {
-            var s = "GG";
-            return Ok(s);
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Tokens:Issuer"],
+                audience: _configuration["Tokens:Audience"],
+                expires: DateTime.Now.AddMinutes(120),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
+
+            return token;
         }
+
+        #endregion
+
     }
 }

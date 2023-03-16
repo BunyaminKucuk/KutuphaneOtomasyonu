@@ -1,0 +1,70 @@
+﻿@using Entity.Concrete
+@model List<User>
+
+@{
+    ViewData["Title"] = "UserList";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>Adı</th>
+        <th>Kullnıcı Adı</th>
+        <th>E postası</th>
+        <th>Kullanıcı Durumu</th>
+        <th>Sil</th>
+        <th>Rol Ata</th>
+        <th>Düzenle</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <th>@item.Name</th>
+            <td>@item.UserName</td>
+            <td>@item.Email</td>
+            <td>
+                @if (@item.IsActive == true)
+                {
+                    <span>Aktif</span>
+
+                }
+                else
+                {
+                    <span>Pasif</span>
+
+                }
+            </td>
+            <td><a href="#" class="btn btn-danger">Sil</a></td>
+            @* <td>
+        <!--Sil modal Butonu-->
+        <a type="button" class="text-danger " data-toggle="modal" data-target="#Sil_@item.Id"></a>
+        <!--Modal-->
+        <div class="modal fade" id="Sil_@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Kullanıcıyı Sil</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+        <h4>Bloğu silmek istiyor musunuz?</h4>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-info mx-4" data-dismiss="modal">Vazgeç</button>
+        @Html.ActionLink("Sil", "DeleteUser", new { id = @item.Id }, new { @class = "btn btn-danger mx-4" })
+        </div>
+        </div>
+        </div>
+        </div>
+        </td>*@
+
+
+            @*<td><a type="button" href="#" class="text-warning mdi mdi-lead-pencil"></a></td>*@
+            <td><a href="/Role/AddRoleToUser/@item.Id" class="btn btn-warning">Rol ata</a></td>
+            <td><a href="/Admin/UserEdit/@item.Id" class="btn btn-warning">Düzenle</a></td>
+        </tr>
+    }
+</table>
+

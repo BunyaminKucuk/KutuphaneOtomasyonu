@@ -1,9 +1,12 @@
 ﻿@using Entity.Identity
 @model List<ApplicationRole>
+
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+    ViewData["Title"] = "RoleList";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+
+
 
 <table class="table table-bordered">
     <tr>
@@ -18,4 +21,4 @@
         </tr>
     }
 </table>
-<a href="/Admin/Role/AddNewRole" class="btn btn-primary">Yeni Rol Oluştur</a>
+<a href="/Role/AddRole" class="btn btn-primary">Yeni Rol Oluştur</a>

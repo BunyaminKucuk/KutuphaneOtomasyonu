@@ -83,9 +83,8 @@ namespace Library.API.Controllers
 
         }
 
-        //user id gelcek
-        [HttpPatch("UpdateUser")]
-        public async void UpdateUser([FromBody] UserModel model, string userId = "2fa4b006-b22f-4e94-b379-2ae505db740e")
+        [HttpPost("UpdateUser")]
+        public async void UpdateUser([FromBody] UserModel model)
         {
             try
             {
@@ -101,11 +100,7 @@ namespace Library.API.Controllers
                 {
                     throw new Exception("Belirtilen mail adresi sitemde mevcuttur.Lütfen yeni bir mail adresi giriniz.");
                 }
-                bool userNameCheck = _unitOfWork.User.GetListAll().Where(x => x.UserName == model.UserName).Any();
-                if (userNameCheck)
-                {
-                    throw new Exception("Belirtilen kullanıcı adı sitemde mevcuttur.Lütfen yeni bir kullanıcı adı giriniz.");
-                }
+
                 var identityCheck = _userManager.Users.Where(x => x.IdentityId == checkUser.IdentityId).FirstOrDefault();
                 if (identityCheck == null)
                 {
@@ -117,7 +112,6 @@ namespace Library.API.Controllers
                 checkUser.Email = model.Email;
                 checkUser.PhoneNumber = model.PhoneNumber;
                 checkUser.UserName = model.UserName;
-                checkUser.IdentityId = model.IdentityId;
                 checkUser.Password = model.Password;
                 checkUser.IsActive = model.IsActive;
                 checkUser.LibraryStatus = model.LibraryStatus;
@@ -135,12 +129,11 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("AddRoleToUser")]
-        //public async void AddRoleToUser(List<string> roles, int userId)
-        public async void AddRoleToUser(List<string> roles, int userId)
+        public async void AddRoleToUser(AddRoleToUserModel model)
         {
             try
             {
-                var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == userId).FirstOrDefault();
+                var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == model.User.Id).FirstOrDefault();
                 if (userCheck == null)
                 {
                     throw new Exception("Kullanıcı bulunamadı.");
@@ -156,11 +149,10 @@ namespace Library.API.Controllers
                 }
 
                 List<ApplicationRole> roleList = new List<ApplicationRole>();
-                foreach (var item in roles)
-                {
-                    var rol = await _roleManager.FindByNameAsync(item);
-                    if (!string.IsNullOrEmpty(rol.RoleName)) roleList.Add(rol);
-                }
+
+                var rol = await _roleManager.FindByIdAsync(model.Role.Id);
+                if (!string.IsNullOrEmpty(rol.RoleName)) roleList.Add(rol);
+
 
                 _unitOfWork.User.UpdateIdentiy(_userManager, userCheck, roleList);
 

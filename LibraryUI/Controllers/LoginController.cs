@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Azure;
+using DataAccess.Abstract;
 
 namespace LibraryUI.Controllers
 {
@@ -17,6 +18,17 @@ namespace LibraryUI.Controllers
     {
         private readonly SignInManager<LoginModel> _signInManager;
         private readonly HttpClient _httpClient = new HttpClient();
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public LoginController(IUnitOfWork unitOfWork, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
+        {
+            _unitOfWork = unitOfWork;
+            _roleManager = roleManager;
+            _userManager = userManager;
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -39,12 +51,38 @@ namespace LibraryUI.Controllers
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                return RedirectToAction("TakeOnBook", "Book");
+
+                var user = await _userManager.FindByNameAsync(model.UserName);
+                var userRole = await _userManager.GetRolesAsync(user);
+                switch (userRole.FirstOrDefault())
+                {
+                    case "Admin":
+                        return RedirectToAction("Index", "Admin");
+                        break;
+                    case "Librarian":
+                        return RedirectToAction("Index", "Admin");
+                        break;
+                    case "Customer":
+                        return RedirectToAction("TakeOnBook", "Book");
+                        break;
+                }
             }
             else
             {
                 return RedirectToAction("LogOut", "Login");
             }
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Register(RegisterModel model)
+        {
             return View();
         }
 

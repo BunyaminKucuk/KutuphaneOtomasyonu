@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.3" />
@@ -33,11 +34,6 @@
     <ProjectReference Include="..\Entity\Entity.csproj" />
     <ProjectReference Include="..\Library.API\Library.API.csproj" />
     <ProjectReference Include="..\Object\Object.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Models\" />
   </ItemGroup>
 
 </Project>

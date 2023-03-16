@@ -211,7 +211,7 @@ namespace DataAccess.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
+                name: "AspNetUserRolesAspNetUserRoles",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
