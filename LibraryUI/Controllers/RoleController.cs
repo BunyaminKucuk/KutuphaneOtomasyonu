@@ -1,29 +1,29 @@
 ﻿using DataAccess.Abstract;
+using Entity.Concrete;
 using Entity.Identity;
 using Library.API.Controllers;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace LibraryUI.Controllers
 {
     //[Authorize(Policy = "AdminPolicy")]
-    public class RoleController : Controller
+    public class RoleController : BaseController
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly RoleManager<ApplicationRole> _roleManager;
-
-        public RoleController(IUnitOfWork unitOfWork, RoleManager<ApplicationRole> roleManager)
-        {
-            _unitOfWork = unitOfWork;
-            _roleManager = roleManager;
-        }
 
 
         public async Task<IActionResult> RoleList()
         {
+            var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
             var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Role/GetAllRoles");
             var jsonString = await responseMessage.Content.ReadAsStringAsync();
             var values = JsonConvert.DeserializeObject<List<ApplicationRole>>(jsonString);
@@ -39,9 +39,8 @@ namespace LibraryUI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRole(ApplicationRole model)
         {
-
-            //var token = HttpContext.User.FindFirst(ClaimTypes.Authentication).Value;
-            //_httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var responseMessage = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/Role/AddNewRole"), model);
             if (responseMessage.IsSuccessStatusCode)
             {
@@ -53,28 +52,29 @@ namespace LibraryUI.Controllers
         [HttpGet]
         public async Task<IActionResult> AddRoleToUser()
         {
-            List<SelectListItem> roleValues = (from x in _roleManager.Roles.ToList()
-                                               select new SelectListItem
-                                               {
-                                                   Text = x.RoleName,
-                                                   Value = x.Id
-                                               }).ToList();
-            ViewBag.cv = roleValues;
-            return View();
+            var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
+            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Role/GetAllRoles");
+            var jsonString = await responseMessage.Content.ReadAsStringAsync();
+            var values = JsonConvert.DeserializeObject<List<ApplicationRole>>(jsonString);
+            ViewBag.cv = new SelectList(values, "Id", "Name");
+            return View(new AddRoleToUserModel());
         }
 
         [HttpPost]
         public async Task<IActionResult> AddRoleToUser(AddRoleToUserModel model, int id)
         {
             model.User.Id = id;
-            var responseMessage = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/User/AddRoleToUser?User.Id=" + id + "&Role.Id=" + model.Role.Id), model);
 
+            var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+            var responseMessage = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/User/AddRoleToUser"), model);
 
             if (responseMessage.IsSuccessStatusCode)
             {
-                //return RedirectToAction("Index", "Role");
-                return LocalRedirect("/Admin/Dashboard/Index");
+                return RedirectToAction("UserList", "Admin");
             }
             return View();
         }

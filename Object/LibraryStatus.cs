@@ -7,9 +7,9 @@ namespace Object
     {
         [Description("Kitap Kullanıcıda")]
         [Display(Name = "InUser")]
-        HighSchool = 0,
+        Kullaıcı = 0,
         [Description("Kitap Kütüphanede")]
         [Display(Name = "InLibrary")]
-        AssociateDegree = 1
+        Kütüphane = 1
     }
 }

@@ -2,13 +2,15 @@
 using Entity.Concrete;
 using Entity.Identity;
 using Library.API.Model;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers
 {
     [Route("api/[controller]")]
-    // [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -84,13 +86,12 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("UpdateUser")]
-        public async void UpdateUser([FromBody] UserModel model)
+        public async Task<IActionResult> UpdateUser([FromBody] UserModel model)
         {
             try
             {
-                var checkUser = _unitOfWork.User.GetListAll().Where(x => x.UserName == model.UserName && x.IdentityId == model.IdentityId).FirstOrDefault();
-                List<ApplicationRole> role = new List<ApplicationRole>();
 
+                var checkUser = _unitOfWork.User.GetListAll().Where(x => x.UserName == model.UserName && x.IdentityId == model.IdentityId).FirstOrDefault();
                 if (checkUser == null)
                 {
                     throw new Exception("Belirtilen kullanıcı bulunamadı.");
@@ -107,6 +108,18 @@ namespace Library.API.Controllers
                     throw new Exception("Identity kullanıcısı bulunamadı.");
                 }
 
+                var user = await _userManager.FindByNameAsync(model.UserName);
+
+                var roles = await _userManager.GetRolesAsync(user);
+
+                var applicationRoles = new List<ApplicationRole>();
+
+                foreach (var roleName in roles)
+                {
+                    var applicationRole = await _roleManager.FindByNameAsync(roleName);
+                    applicationRoles.Add(applicationRole);
+                }
+
                 checkUser.Name = model.Name;
                 checkUser.UserName = model.UserName;
                 checkUser.Email = model.Email;
@@ -117,19 +130,24 @@ namespace Library.API.Controllers
                 checkUser.LibraryStatus = model.LibraryStatus;
                 checkUser.Deleted = model.Deleted;
 
-                _unitOfWork.User.UpdateIdentiy(_userManager, checkUser, role);
+
+
+                _unitOfWork.User.UpdateIdentiy(_userManager, checkUser, applicationRoles);
                 _unitOfWork.User.Update(checkUser);
                 _unitOfWork.SaveChanges();
+                return Ok();
             }
             catch (Exception ex)
             {
 
                 throw ex;
             }
+
+            return BadRequest();
         }
 
         [HttpPost("AddRoleToUser")]
-        public async void AddRoleToUser(AddRoleToUserModel model)
+        public async Task<IActionResult> AddRoleToUser([FromBody] AddRoleToUserModel model)
         {
             try
             {
@@ -155,12 +173,14 @@ namespace Library.API.Controllers
 
 
                 _unitOfWork.User.UpdateIdentiy(_userManager, userCheck, roleList);
-
+                return Ok();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+
+            return BadRequest();
         }
 
         [HttpPatch("DeleteUser")]
@@ -198,7 +218,7 @@ namespace Library.API.Controllers
         }
 
         [HttpGet("GetUsersByRole")]
-        public List<User> GetStaffsByRole(string roleName)
+        public List<User> GetUserByRole(string roleName)
         {
             try
             {
@@ -228,7 +248,52 @@ namespace Library.API.Controllers
             {
                 throw ex;
             }
+
         }
+
+        [HttpGet("UserGetById")]
+        public UserModel UserGetById(int id)
+        {
+            try
+            {
+                var userCheck = _unitOfWork.User.GetListAll().FirstOrDefault(x => x.Id == id);
+                if (userCheck == null)
+                {
+                    throw new Exception("Kullanıcı bulunamadı.");
+                }
+
+                if (Guid.Empty == userCheck.IdentityId)
+                {
+                    throw new Exception("Identity bilgisi alınamadı.");
+                }
+
+                var identityUserCheck = _userManager.Users.FirstOrDefault(x => x.IdentityId == userCheck.IdentityId);
+                if (identityUserCheck == null)
+                {
+                    throw new Exception("Identity kullanıcısı bulunamadı");
+                }
+
+                UserModel userModel = new UserModel
+                {
+                    Name = userCheck.Name,
+                    UserName = userCheck.UserName,
+                    Email = userCheck.Email,
+                    IsActive = userCheck.IsActive,
+                    IdentityId = userCheck.IdentityId,
+                    Deleted = userCheck.Deleted,
+                    Id = userCheck.Id,
+                    PhoneNumber = userCheck.PhoneNumber
+                };
+
+                return userModel;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
     }
 }
 

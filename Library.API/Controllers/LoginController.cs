@@ -69,9 +69,9 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register([FromBody]RegisterModel model)
         {
-            var userExists = await _userManager.FindByNameAsync(model.Username);
+            var userExists = await _userManager.FindByNameAsync(model.UserName);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
@@ -79,7 +79,7 @@ namespace Library.API.Controllers
             {
                 Email = model.Email,
                 IdentityId = Guid.NewGuid(),
-                UserName = model.Username,
+                UserName = model.UserName,
                 IsActive = "0"
             };
             var result = await _userManager.CreateAsync(user, model.Password);

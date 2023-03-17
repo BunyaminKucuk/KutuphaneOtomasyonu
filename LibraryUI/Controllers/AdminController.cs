@@ -2,26 +2,21 @@
 using Entity.Concrete;
 using Entity.Identity;
 using Library.API.Model;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryUI.Controllers
 {
-    //[Authorize(Policy = "AdminPolicy")]
-    public class AdminController : Controller
+    [Authorize(Policy = "AdminPolicy")]
+    public class AdminController : BaseController
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
-
-        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
-        {
-            _roleManager = roleManager;
-            _userManager = userManager;
-            _unitOfWork = unitOfWork;
-        }
 
         public IActionResult Index()
         {
@@ -33,45 +28,28 @@ namespace LibraryUI.Controllers
             return PartialView();
         }
 
+
         public async Task<IActionResult> UserList()
         {
-
+            var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/User/GetAllUsers");
+
+
             var jsonString = await responseMessage.Content.ReadAsStringAsync();
             var values = JsonConvert.DeserializeObject<List<User>>(jsonString);
             return View(values);
-
         }
 
         [HttpGet]
         public async Task<IActionResult> UserEdit(int id)
         {
-            var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == id).FirstOrDefault();
-            if (userCheck == null)
-            {
-                throw new Exception("Kullanıcı bulunamadı.");
-            }
-            if (Guid.Empty == userCheck.IdentityId)
-            {
-                throw new Exception("Identity bilgisi alınamadı.");
-            }
-            var identityUserCheck = _userManager.Users.Where(x => x.IdentityId == userCheck.IdentityId).FirstOrDefault();
-            if (identityUserCheck == null)
-            {
-                throw new Exception("Identity kullanıcısı bulunamadı");
-            }
+            var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/User/UserGetById?id=" + id);
 
-            UserModel userModel = new UserModel();
-            //var userCheck = _userManager.GetUserName(userName);
-            userModel.Name = userCheck.Name;
-            userModel.UserName = userCheck.UserName;
-            userModel.Email = userCheck.Email;
-            userModel.IsActive = userCheck.IsActive;
-            userModel.IdentityId = userCheck.IdentityId;
-            userModel.Deleted = userCheck.Deleted;
-            userModel.Id = userCheck.Id;
-            userModel.PhoneNumber = userCheck.PhoneNumber;
-
+            var jsonString = await responseMessage.Content.ReadAsStringAsync();
+            var userModel = JsonConvert.DeserializeObject<UserModel>(jsonString);
             return View(userModel);
         }
 
@@ -79,11 +57,16 @@ namespace LibraryUI.Controllers
         public async Task<IActionResult> UserEdit(UserModel model)
         {
 
-            var responseMessage = await _httpClient.PostAsJsonAsync("https://localhost:7299/api/User/UpdateUser",model);
+            var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var responseMessage = await _httpClient.PostAsJsonAsync("https://localhost:7299/api/User/UpdateUser", model);
 
-            var jsonString = await responseMessage.Content.ReadAsStringAsync();
-            var values = JsonConvert.DeserializeObject<List<User>>(jsonString);
-            return View(values);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                RedirectToAction("UserList", "Admin");
+            }
+
+            return View();
             //var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == model.Id).FirstOrDefault();
             //return View();
         }

@@ -5,7 +5,7 @@ namespace Library.API.Model
     public class RegisterModel
     {
         [Required(ErrorMessage = "User Name is required")]
-        public string? Username { get; set; }
+        public string? UserName { get; set; }
 
         [EmailAddress]
         [Required(ErrorMessage = "Email is required")]

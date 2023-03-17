@@ -33,7 +33,7 @@ namespace Library.API.Controllers
                 var list = _unitOfWork.Book.GetListAll();
                 if (list.Count() == 0)
                 {
-                    throw new Exception("Personel bilgileri alınamadı.");
+                    throw new Exception("Kitap bilgileri alınamadı.");
                 }
                 foreach (var item in list)
                 {
@@ -160,7 +160,7 @@ namespace Library.API.Controllers
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("AddBookToUser")]
-        public async void AddBookToUser(TakeOfBook model)
+        public async void AddBookToUser([FromBody] TakeOfBook model)
         {
             try
             {

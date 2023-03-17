@@ -1,31 +1,48 @@
-﻿<nav class="navbar-default navbar-static-side" role="navigation">
-    <div class="sidebar-collapse">
-        <ul class="nav metismenu" id="side-menu">
-            <li class="nav-header">
-                <div class="dropdown profile-element">
-                    <img alt="image" class="rounded-circle" src="~/admin/img/profile_small.jpg" />
-                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                        <span class="block m-t-xs font-bold">İsim Soyisim</span>
-                        <span class="text-muted text-xs block">Yazılım Mühendisi <b class="caret"></b></span>
-                    </a>
-                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                        <li><a class="dropdown-item" href="contacts.html">Contacts</a></li>
-                        <li><a class="dropdown-item" href="mailbox.html">Mailbox</a></li>
-                        <li class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="login.html">Logout</a></li>
-                    </ul>
+﻿<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+        <li class="nav-item nav-profile">
+            <a href="#" class="nav-link">
+                <div class="nav-profile-image">
+                    <img src="/Tema/prupleadmin/assets/images/faces/face1.jpg" alt="profile">
+                    <span class="login-status online"></span>
+                    <!--change to offline or busy as needed-->
                 </div>
-                <div class="logo-element">
-                    IN+
+                <div class="nav-profile-text d-flex flex-column">
+                    <span class="font-weight-bold mb-2">David Grey. H</span>
+                    <span class="text-secondary text-small">Project Manager</span>
                 </div>
+                <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+            </a>
+        </li>
+        @if (ViewBag.Role == "Admin")
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/UserList">
+                    <span class="menu-title">Kullanıcılar</span>
+                    <i class="mdi mdi-contacts menu-icon"></i>
+                </a>
             </li>
-            <li>
-                <a href="~/Admin/UserList"><i class="fa fa-pie-chart"></i> <span class="nav-label">Kullanıcılar</span>  </a>
+            <li class="nav-item">
+                <a class="nav-link" href="/Role/RoleList">
+                    <span class="menu-title">Roller</span>
+                    <i class="mdi mdi mdi-google-controller menu-icon"></i>
+                </a>
             </li>
-            <li>
-                <a href="/Role/RoleList"><i class="fa fa-book"></i> <span class="nav-label">Roller</span></a>
+        }
+        @if (ViewBag.Role == "Librarian")
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="/Book/BookList">
+                    <span class="menu-title">Kitaplar</span>
+                    <i class="mdi mdi-book-open-page-variant menu-icon"></i>
+                </a>
             </li>
-        </ul>
-    </div>
+            <li class="nav-item">
+                <a class="nav-link" href="/Book/TakeOnBook">
+                    <span class="menu-title">Kullanıcıya Kitap Ekle</span>
+                    <i class="mdi mdi-medical-bag menu-icon"></i>
+                </a>
+            </li>
+        }
+    </ul>
 </nav>

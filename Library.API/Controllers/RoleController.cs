@@ -1,21 +1,26 @@
 ﻿using DataAccess.Abstract;
 using Entity.Identity;
 using Library.API.Model;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RoleController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RoleController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
+        public RoleController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("GetAllRoles")]
@@ -31,14 +36,15 @@ namespace Library.API.Controllers
             }
         }
 
-        [HttpGet("GetUserRole")]
-        public List<string> GetUserRole(Guid identityId)
+        [HttpPost("GetUserRoleAndIsActive")]
+        public IActionResult GetUserRole([FromBody]LoginModel model)
         {
             List<ApplicationRole> response = new List<ApplicationRole>();
             try
             {
-
-                var appUser = _userManager.Users.Where(x => x.IdentityId == identityId).FirstOrDefault();
+                var userCheck = _unitOfWork.User.GetListAll().Where(x => x.UserName == model.UserName).FirstOrDefault();
+                var appUser = _userManager.Users.Where(x => x.IdentityId == userCheck.IdentityId).FirstOrDefault();
+                var userIsActive = userCheck.IsActive;
 
                 if (appUser == null)
                 {
@@ -49,11 +55,16 @@ namespace Library.API.Controllers
                 {
                     throw new Exception("Identity bilgisi alınamadı.");
                 }
-                return _userManager.GetRolesAsync(appUser).Result.ToList();
+
+                var userRoles = _userManager.GetRolesAsync(appUser).Result.FirstOrDefault();
+
+                var result = new { Roles = userRoles, IsActive = userIsActive };
+                return Ok(result);
+
             }
             catch (Exception ex)
             {
-                throw ex;
+                return BadRequest(ex.Message);
             }
         }
 
