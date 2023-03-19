@@ -12,5 +12,7 @@ namespace Entity.Concrete
         public virtual Book Book { get; set; }
         public DateTime? StartOnUtc { get; set; }
         public DateTime? EndOnUtc { get; set; }
+        public bool? IsApproved { get; set; }
+
     }
 }

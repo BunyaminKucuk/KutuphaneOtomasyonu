@@ -58,7 +58,7 @@ namespace Library.API.Controllers
                         CreatedOnUtc = item.CreatedOnUtc,
                         BookDescription = item.BookDescription,
                         BookImageUrl = item.BookImageUrl,
-                        //BookStatus = item.BookStatus
+                        BookStatus = item.BookStatus
                     });
                 }
             }
@@ -84,7 +84,7 @@ namespace Library.API.Controllers
                 book.BookDescription = model.BookDescription;
                 book.BookImageUrl = model.BookImageUrl;
                 book.Deleted = false;
-                //book.BookStatus = false;
+                book.BookStatus = false;
                 book.CreatedOnUtc = DateTime.Now;
                 _unitOfWork.Book.Insert(book);
                 _unitOfWork.SaveChanges();
@@ -138,7 +138,7 @@ namespace Library.API.Controllers
                 check.Deleted = model.Deleted;
                 check.BookImageUrl = model.BookImageUrl;
                 check.BookDescription = model.BookDescription;
-                //check.BookStatus = model.BookStatus;
+                check.BookStatus = model.BookStatus;
                 _unitOfWork.Book.Update(check);
                 _unitOfWork.SaveChanges();
                 return Ok();
@@ -174,7 +174,7 @@ namespace Library.API.Controllers
                 checkBook.Deleted = checkBook.Deleted;
                 checkBook.BookImageUrl = checkBook.BookImageUrl;
                 checkBook.BookDescription = checkBook.BookDescription;
-                //checkBook.BookStatus = checkBook.BookStatus;
+                checkBook.BookStatus = checkBook.BookStatus;
                 _unitOfWork.Book.Update(checkBook);
                 _unitOfWork.SaveChanges();
             }

@@ -43,9 +43,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
     })
     .AddEntityFrameworkStores<LibraryContext>()
-    .AddDefaultTokenProviders()
-    .AddDefaultTokenProviders()
-    .AddSignInManager<SignInManager<ApplicationUser>>();
+    .AddDefaultTokenProviders();
 
 //// Adding Authentication
 
