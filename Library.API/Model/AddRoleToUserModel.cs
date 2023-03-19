@@ -1,7 +1,7 @@
 ﻿using Entity.Concrete;
 using Entity.Identity;
 
-namespace Library.API.Controllers
+namespace Library.API.Model
 {
     public class AddRoleToUserModel
     {

@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Library.API.Model;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using DataAccess.Abstract;
+﻿using DataAccess.Abstract;
 using Entity.Concrete;
-using Microsoft.IdentityModel.Tokens;
 using Entity.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Library.API.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Library.API.Controllers
 {
@@ -38,38 +37,40 @@ namespace Library.API.Controllers
 
         #region Methods
 
-        [HttpPost("Login")]
-        public async Task<string> Login([FromBody] LoginModel model)
-        {
-            var user = await _userManager.FindByNameAsync(model.UserName);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            [HttpPost("Login")]
+            public async Task<List<string>> Login([FromBody] LoginModel model)
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                //vs kapat tekrar aç tekrar eder
-                var authClaims = new List<Claim>
+                var user = await _userManager.FindByNameAsync(model.UserName);
+                if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    //ikidir continue yerine stack fire diye bişeye basıyon amk dikkat et abi f11 basıyorum olamyaınca nbasıyorum
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
+                    var userRoles = await _userManager.GetRolesAsync(user);
 
-                foreach (var userRole in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    var authClaims = new List<Claim>
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                    };
+
+                    foreach (var userRole in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    }
+
+                    var token = GetToken(authClaims);
+                    var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+                    var userCheck = _unitOfWork.User.GetListAll().FirstOrDefault(x => x.IdentityId == user.IdentityId)?.Id;
+
+                    List<string> response = new List<string>();
+                    response.Add(jwt);
+                    response.Add(user.IdentityId.ToString());
+                    response.Add(userCheck.ToString());
+                    return response;
                 }
 
-                var token = GetToken(authClaims);
-                var A = new JwtSecurityTokenHandler().WriteToken(token);
-
-
-                return (A);
+                return new List<string> { "gg" };
             }
 
-            return "gg";
-        }
-
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody]RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var userExists = await _userManager.FindByNameAsync(model.UserName);
             if (userExists != null)
@@ -80,7 +81,6 @@ namespace Library.API.Controllers
                 Email = model.Email,
                 IdentityId = Guid.NewGuid(),
                 UserName = model.UserName,
-                IsActive = "0"
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

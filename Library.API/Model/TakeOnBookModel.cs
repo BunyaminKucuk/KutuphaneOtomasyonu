@@ -8,5 +8,7 @@ namespace Library.API.Model
         public int BookId { get; set; }
         public DateTime? StartOnUtc { get; set; }
         public DateTime? EndOnUtc { get; set; }
+        public List<User> Users { get; set; }
+
     }
 }

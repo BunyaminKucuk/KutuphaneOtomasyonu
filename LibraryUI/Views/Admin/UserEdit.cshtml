@@ -31,8 +31,22 @@
                         <option value="false">Pasif</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-gradient-primary mr-2">Güncelle</button>
+                <button type="submit" class="btn btn-gradient-primary mr-2" onclick="updateBook()">Güncelle</button>
             </form>
         </div>
     </div>
 </div>
+<script>
+    function updateBook() {
+        var form = document.getElementById("update-form");
+        form.submit();
+
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Kitap başarıyla güncellendi',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+</script>

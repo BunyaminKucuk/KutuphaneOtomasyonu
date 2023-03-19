@@ -1,0 +1,36 @@
+﻿@using Entity.Concrete
+@model List<Book>
+@{
+    ViewData["Title"] = "UserBookList";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@if (Model == null || Model.Count == 0)
+{
+    <div class="alert alert-warning">
+        Henüz herhangi bir kitap alınmamış.
+    </div>
+    <button type="button" class="btn btn-primary">Kitap Al</button>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 d-flex flex-column">
+                    <img src="https://via.placeholder.com/150" class="card-img-top img-fluid rounded-circle" alt="John Doe" style="width: 75px; height: 75px;">
+                    <div class="card-header">
+                        <h4>@item.BookWriter</h4>
+                    </div>
+                    <div class="card-body flex-grow-1">
+                        <p class="card-text">@item.BookName.</p>
+                        <p class="card-text">@item.BookType</p>
+                        <p class="card-text">@item.BookDescription</p>
+                    </div>
+                </div>
+            </div>
+            <td><a href="Customer/DeleteUserBook/@item.Id" class="badge badge-danger">Sil</a></td>
+        }
+    </div>
+
+}

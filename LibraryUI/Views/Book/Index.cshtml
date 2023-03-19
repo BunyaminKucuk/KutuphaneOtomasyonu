@@ -3,63 +3,35 @@
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<section class="main-content-w3layouts-agileits">
-    <div class="container">
-        <h3 class="tittle">Kitaplar</h3>
-        <div class="inner-sec">
-            <!--left-->
-            <div class="left-blog-info-w3layouts-agileits text-left">
-                <div class="row">
-                    @foreach (var item in Model)
-                    {
-
-
-                        <div class="col-lg-4 card">
-                            <a href="single.html">
-                                @*<img src="@item.BookImageUrl" class="card-img-top img-fluid" alt="">*@
-                                <img src="~/Tema/web/images/3.jpg" class="card-img-top img-fluid" alt="">
-
-                            </a>
-                            <div class="card-body">
-                                <ul class="blog-icons my-4">
-                                    <li>
-                                        <a href="#">
-                                            <i class="far fa-calendar-alt"></i> @(((DateTime)item.CreatedOnUtc).ToString("dd.MM.yyyy"))
-                                        </a>
-                                    </li>
-
-                                    @*                                    <li class="mx-2">
-                                <a href="#">
-                                <i class="far fa-comment"></i> 0
-                                </a>
-                                </li>*@
-                                    <li>
-                                        <a href="#">
-                                            <i class="fas fa-eye"></i> @item.BookType
-                                        </a>
-
-
-                                    </li>
-
-                                </ul>
-                                <h5 class="card-title">
-                                    <a href="/Blog/BlogReadAll/@item.Id">@item.BookName</a>
-                                </h5>
-                                <p class="card-text mb-3">@item.BookDescription.Substring(0,item.BookDescription.Substring(0,50).LastIndexOf(" "))...</p>
-                                <a href="/Book/BookReadMore/@item.Id" class="btn btn-primary read-m">Devamını oku</a>
-
+@if (Model == null || Model.Count == 0)
+{
+        <div class="alert alert-warning">
+            Henüz kitaplığa kitap eklenmemiştir.
+        </div>
+}
+else
+{
+        <div class="row">
+        @foreach (var item in Model)
+        {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 d-flex flex-column">
+                            <img src="https://via.placeholder.com/150" class="card-img-top img-fluid rounded-circle" alt="John Doe" style="width: 75px; height: 75px;">
+                            <div class="card-header">
+                                <h4>@item.BookWriter</h4>
+                            </div>
+                            <div class="card-body flex-grow-1">
+                                <p class="card-text">@item.BookName.</p>
+                                <p class="card-text">@item.BookType</p>
+                                <p class="card-text">@item.BookDescription</p>
                             </div>
                         </div>
-                        <br />
-                    }
-                </div>
-                <!--//left-->
-            </div>
+                    </div>
+                    <td><a href="Customer/DeleteUserBook/@item.Id" class="badge badge-danger">Sil</a></td>
+        }
         </div>
-    </div>
-</section>
 
-
+}

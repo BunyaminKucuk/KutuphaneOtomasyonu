@@ -15,7 +15,7 @@ namespace Entity.Concrete
         public string? BookImageUrl { get; set; }
         public DateTime CreatedOnUtc { get; set; }
         public bool Deleted { get; set; }
-        public bool BookStatus { get; set; }
+        //public bool BookStatus { get; set; }
         public ICollection<TakeOfBook> TakeOfBooks { get; set; }
 
     }

@@ -1,19 +1,14 @@
-﻿using DataAccess.Abstract;
-using Entity.Concrete;
-using Entity.Identity;
-using Library.API.Controllers;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+﻿using Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Library.API.Model;
 
 namespace LibraryUI.Controllers
 {
-    //[Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     public class RoleController : BaseController
     {
         private readonly HttpClient _httpClient = new HttpClient();

@@ -30,7 +30,6 @@ namespace DataAccess.Repositories.EntityFramework
                     UserName = username,
                     Email = item.Email,
                     IdentityId = item.IdentityId,
-                    IsActive = "true",
                     Name = item.Name
                 };
 
@@ -76,7 +75,6 @@ namespace DataAccess.Repositories.EntityFramework
             if (user != null)
             {
                 user.Email = item.Email;
-                user.IsActive = "true";
                 user.Name = item.Name;
 
                 result = userManager.UpdateAsync(user).GetAwaiter().GetResult();

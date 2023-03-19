@@ -2,21 +2,25 @@
 using Entity.Concrete;
 using Entity.Identity;
 using Library.API.Model;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : Controller
     {
+        #region Fields
+
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
+        #endregion
+
+
+        #region Ctor
 
         public UserController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
         {
@@ -25,19 +29,25 @@ namespace Library.API.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        #endregion
+
+
+        #region Methods
+
         [HttpGet("GetAllUsers")]
-        public List<User> GetAllUsers()
+        public IActionResult GetAllUsers()
         {
             try
             {
-                return _unitOfWork.User.GetListAll();
+                var users = _unitOfWork.User.GetListAll().Where(x => x.Deleted == false).ToList();
+                return Ok(users);
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                return BadRequest(ex.Message);
             }
         }
+
 
 
         [HttpPost("AddNewUser")]
@@ -56,7 +66,6 @@ namespace Library.API.Controllers
 
                 ApplicationUser applicationUser = new ApplicationUser
                 {
-                    IsActive = "true",
                     Email = model.Email,
                     IdentityId = Guid.NewGuid(),
                     Name = model.Name,
@@ -109,11 +118,8 @@ namespace Library.API.Controllers
                 }
 
                 var user = await _userManager.FindByNameAsync(model.UserName);
-
                 var roles = await _userManager.GetRolesAsync(user);
-
                 var applicationRoles = new List<ApplicationRole>();
-
                 foreach (var roleName in roles)
                 {
                     var applicationRole = await _roleManager.FindByNameAsync(roleName);
@@ -183,37 +189,39 @@ namespace Library.API.Controllers
             return BadRequest();
         }
 
-        [HttpPatch("DeleteUser")]
-        public async void DeleteUser(string userId)
+        [HttpPost("UserDelete")]
+        public async void UserDelete([FromBody] int userId)
         {
             try
             {
-                var checkUser = _userManager.Users.ToList().Where(x => x.Id == userId).FirstOrDefault();
+                var checkUser = _unitOfWork.User.GetListAll().Where(x => x.Id == userId).FirstOrDefault();
+
                 if (checkUser == null)
                 {
                     throw new Exception("Belirtilen kullanıcı bulunamadı.");
                 }
+
+                checkUser.Name = checkUser.Name;
+                checkUser.UserName = checkUser.UserName;
+                checkUser.Email = checkUser.Email;
+                checkUser.PhoneNumber = checkUser.PhoneNumber;
+                checkUser.UserName = checkUser.UserName;
+                checkUser.Password = checkUser.Password;
+                checkUser.IsActive = false;
+                checkUser.LibraryStatus = checkUser.LibraryStatus;
+                checkUser.Id = checkUser.Id;
+                checkUser.IdentityId = checkUser.IdentityId;
                 checkUser.Deleted = true;
-                var result = _userManager.UpdateAsync(checkUser).GetAwaiter().GetResult();
+
+                _unitOfWork.User.Update(checkUser);
+                _unitOfWork.SaveChanges();
+
 
             }
             catch (Exception)
             {
 
                 throw;
-            }
-        }
-
-        [HttpGet("GetActiveUsers")]
-        public List<User> GetActiveStaffs()
-        {
-            try
-            {
-                return _unitOfWork.User.GetListAll().Where(x => x.IsActive == true).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
         }
 
@@ -293,6 +301,15 @@ namespace Library.API.Controllers
                 throw;
             }
         }
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string query)
+        {
+            var users = _unitOfWork.User.GetListAll().Where(u => u.Name.Contains(query) || u.Email.Contains(query) || u.UserName.Contains(query)).ToList();
+            return Ok(users);
+        }
+
+        #endregion
 
     }
 }

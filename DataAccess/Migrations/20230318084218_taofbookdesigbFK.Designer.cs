@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20230315083820_mig1")]
-    partial class mig1
+    [Migration("20230318084218_taofbookdesigbFK")]
+    partial class taofbookdesigbFK
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,9 +43,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("BookPage")
                         .HasColumnType("longtext");
 
-                    b.Property<bool>("BookStatus")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("BookType")
                         .HasColumnType("longtext");
 
@@ -65,24 +62,30 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Entity.Concrete.TakeOfBook", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("BookStatus")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime?>("EndOnUtc")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("StartOnUtc")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("UserId", "BookId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("Id");
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("TakeOfBooks");
                 });
@@ -184,9 +187,8 @@ namespace DataAccess.Migrations
                     b.Property<Guid>("IdentityId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("IsActive")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
@@ -342,13 +344,13 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Entity.Concrete.Book", "Book")
                         .WithMany("TakeOfBooks")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entity.Concrete.User", "User")
                         .WithMany("TakeOfBooks")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

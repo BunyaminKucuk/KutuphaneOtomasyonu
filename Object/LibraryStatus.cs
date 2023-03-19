@@ -7,7 +7,7 @@ namespace Object
     {
         [Description("Kitap Kullanıcıda")]
         [Display(Name = "InUser")]
-        Kullaıcı = 0,
+        Kullanıcı = 0,
         [Description("Kitap Kütüphanede")]
         [Display(Name = "InLibrary")]
         Kütüphane = 1

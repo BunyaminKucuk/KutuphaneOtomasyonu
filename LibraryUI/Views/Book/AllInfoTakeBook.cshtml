@@ -1,0 +1,42 @@
+﻿@using Library.API.Model
+@model List<LoanModel>
+@{
+    ViewData["Title"] = "AllInfoTakeBook";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<body>
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Kullanıcı-Kitap Tablosu</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Kullanıcı Adı</th>
+                                    <th>Kitap Adı</th>
+                                    <th>Kitabı Alma Tarihi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="@((@item.StartOnUtc.DayOfYear % 2 == 0) ? "table-primary" : "table-secondary")">
+                                        <td>@item.UserName</td>
+                                        <td>@item.BookName</td>
+                                        <td>@(((DateTime)item.StartOnUtc).ToString("dd.MM.yyyy"))</td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

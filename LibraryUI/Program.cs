@@ -40,9 +40,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminPolicy", policy =>
-        policy.RequireRole(RoleType.Admin.GetDisplayName(), RoleType.Customer.GetDisplayName(), RoleType.Librarian.GetDisplayName()));
+        policy.RequireRole(RoleType.Admin.GetDisplayName()));
     options.AddPolicy("LibraryPolicy", policy =>
-        policy.RequireRole(RoleType.Customer.GetDisplayName(), RoleType.Librarian.GetDisplayName()));
+        policy.RequireRole(RoleType.Librarian.GetDisplayName()));
     options.AddPolicy("CustomerPolicy", policy =>
         policy.RequireRole(RoleType.Customer.GetDisplayName()));
 });

@@ -13,5 +13,12 @@ namespace DataAccess.Repositories.EntityFramework
         }
         public LibraryContext? _context { get { return Context as LibraryContext; } }
 
+        public IEnumerable<TakeOfBook> GetUnreturnedBookLoans()
+        {
+            return _context.TakeOfBooks
+                .Include(l => l.Book)
+                .Include(l => l.User)
+                .Where(l => l.EndOnUtc == null).ToList();
+        }
     }
 }

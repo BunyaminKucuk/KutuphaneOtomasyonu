@@ -19,14 +19,5 @@ namespace Entity.Identity
         /// </summary>
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the discount is active
-        /// </summary>
-        public string IsActive { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the entity has been deleted
-        /// </summary>
-        public bool Deleted { get; set; }
     }
 }

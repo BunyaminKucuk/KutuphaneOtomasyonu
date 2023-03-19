@@ -6,6 +6,7 @@ using Entity.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using System.Text;
@@ -22,26 +23,29 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMvc().AddJsonOptions(x =>
 {
     x.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-    //x.JsonSerializerOptions.IgnoreNullValues = true;
 });
-var connnectionStrings = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<LibraryContext>(options =>
-{
-    options.UseMySql(connnectionStrings, ServerVersion.AutoDetect(connnectionStrings));
-});
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+//builder.Services.AddDbContext<LibraryContext>(options =>
+//    options.UseMySql(builder.Configuration.GetConnectionString(connectionString), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString(connectionString))));
+
+builder.Services.AddDbContext<LibraryContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
+    b => b.CommandTimeout(120).EnableStringComparisonTranslations(true)
+));
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
-               {
-                   options.Password.RequiredLength = 1;
-                   options.Password.RequireLowercase = false;
-                   options.Password.RequireUppercase = false;
-                   options.Password.RequireNonAlphanumeric = false;
-                   options.Password.RequireDigit = false;
-                   options.Lockout.MaxFailedAccessAttempts = 5;
-                   options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-               })
-                        .AddEntityFrameworkStores<LibraryContext>()
-                        .AddDefaultTokenProviders();
+    {
+        options.Password.RequiredLength = 1;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireDigit = false;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+    })
+    .AddEntityFrameworkStores<LibraryContext>()
+    .AddDefaultTokenProviders()
+    .AddDefaultTokenProviders()
+    .AddSignInManager<SignInManager<ApplicationUser>>();
 
 //// Adding Authentication
 
@@ -73,7 +77,7 @@ builder.Services.AddAuthentication()
         };
 
 
-    } );
+    });
 
 
 

@@ -1,0 +1,41 @@
+﻿@model Entity.Concrete.Book
+@{
+    ViewData["Title"] = "AddBook";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<form class="form-group" method="post">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Kitap Ekleme</h4>
+                <br />
+                <div class="forms-sample">
+                    <div class="form-group">
+                        @Html.Label("Kitap Adı")
+                        @Html.TextBoxFor(x=>x.BookName,new { @class="form-control"})
+                        <br/>
+                        @Html.Label("Yazar Adı")
+                        @Html.TextBoxFor(x=>x.BookWriter,new { @class="form-control"})
+                        <br/>                        
+                        @Html.Label("Kitap Türü")
+                        @Html.TextBoxFor(x=>x.BookType,new { @class="form-control"})
+                        <br/>
+                        @Html.Label("Kitap Açıklaması")
+                        @Html.TextAreaFor(x=>x.BookDescription,15,3,new { @class="form-control"})
+                        <br/>
+                        @Html.Label("Kitap ISBN")
+                        @Html.TextBoxFor(x=>x.BookISBN,new { @class="form-control"})
+                        <br/>
+                        @Html.Label("Kitap resim Yolu")
+                        @Html.TextBoxFor(x=>x.BookImageUrl,new { @class="form-control"})             
+                        <br/>
+                        @Html.Label("Kitabın Sayfa Sayısı")
+                        @Html.TextBoxFor(x=>x.BookPage,new { @class="form-control"})
+                    </div>
+                    <button type="submit" class="btn btn-gradient-primary mr-2">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
