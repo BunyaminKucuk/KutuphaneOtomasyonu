@@ -14,7 +14,7 @@ using System.Text.Json;
 namespace Library.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class BookController : Controller
     {
         #region Fields
@@ -305,16 +305,21 @@ namespace Library.API.Controllers
         [HttpGet("DesiredBooks")]
         public IActionResult DesiredBooks(int userId)
         {
-            var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == userId).FirstOrDefault();
+            var userCheck = _unitOfWork.User.GetById(userId);
             if (userCheck == null)
             {
                 throw new Exception("Belirtilen kullanıcı kitabı bulunamadı.");
             }
-            var desiredBooks = _unitOfWork.TakeOfBook.GetListAll()
-                .Where(x => x.UserId == userCheck.Id && x.IsRequest == true).ToList();
-            if (desiredBooks.Count == 0)
+
+
+            var desiredBooks = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
+                .Where(x => x.UserId == userCheck.Id && x.IsRequest == true)
+                .Select(x => x.Book)
+                .ToList();
+
+            if (desiredBooks?.Count == 0)
             {
-                throw new Exception("Belirtilen Kullanıcının kitap isteği bulunamadı.");
+                throw new Exception("Belirtilen Kullanıcının kitap  isteği bulunamadı.");
             }
 
             var options = new JsonSerializerOptions
@@ -322,8 +327,8 @@ namespace Library.API.Controllers
                 ReferenceHandler = ReferenceHandler.Preserve
             };
             return Ok(JsonSerializer.Serialize(desiredBooks, options));
-        }
 
+        }
 
 
 

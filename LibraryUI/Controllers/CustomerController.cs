@@ -86,16 +86,19 @@ namespace LibraryUI.Controllers
 
             var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Book/DesiredBooks?userId=" +userId);
+            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Book/DesiredBooks?userId=" + userId);
 
             if (responseMessage.IsSuccessStatusCode)
             {
-                var jsonString = responseMessage.Content.ToJson();
+                var jsonString = await responseMessage.Content.ReadAsStringAsync();
                 var books = JsonConvert.DeserializeObject<List<Book>>(jsonString);
                 return View(books);
+
             }
+
             return View();
         }
+
     }
 }
 
