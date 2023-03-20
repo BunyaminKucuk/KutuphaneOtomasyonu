@@ -13,6 +13,7 @@ namespace Entity.Concrete
         public DateTime? StartOnUtc { get; set; }
         public DateTime? EndOnUtc { get; set; }
         public bool? IsRequest { get; set; }
+        public bool? BookStatus { get; set; }
 
     }
 }

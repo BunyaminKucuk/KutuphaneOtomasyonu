@@ -8,10 +8,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace Library.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class BookController : Controller
     {
         #region Fields
@@ -213,6 +216,8 @@ namespace Library.API.Controllers
                 takeOfBook.UserId = model.UserId;
                 takeOfBook.BookId = model.BookId;
                 takeOfBook.StartOnUtc = DateTime.Now;
+                takeOfBook.IsRequest = false;
+                takeOfBook.BookStatus = true;
 
                 _unitOfWork.TakeOfBook.Insert(takeOfBook);
                 _unitOfWork.SaveChanges();
@@ -273,6 +278,50 @@ namespace Library.API.Controllers
                 .ToList();
 
             return Ok(loans);
+        }
+
+
+        [HttpPost("TakeBook")]
+        public IActionResult TakeBook([FromBody] TakeOfBook model)
+        {
+            TakeOfBook takeOfBook = new TakeOfBook();
+            var checkBook = _unitOfWork.Book.GetListAll().Where(x => x.Id == model.BookId);
+            if (checkBook == null)
+            {
+                throw new Exception("Belirtilen kullanıcı kitabı bulunamadı.");
+            }
+
+            takeOfBook.BookId = model.BookId;
+            takeOfBook.UserId = model.UserId;
+            takeOfBook.IsRequest = true;
+            takeOfBook.BookStatus = false;
+
+            _unitOfWork.TakeOfBook.Update(takeOfBook);
+            _unitOfWork.SaveChanges();
+            return Ok(takeOfBook);
+        }
+
+        //talep edilen kitap listesini görüntelemk için
+        [HttpGet("DesiredBooks")]
+        public IActionResult DesiredBooks(int userId)
+        {
+            var userCheck = _unitOfWork.User.GetListAll().Where(x => x.Id == userId).FirstOrDefault();
+            if (userCheck == null)
+            {
+                throw new Exception("Belirtilen kullanıcı kitabı bulunamadı.");
+            }
+            var desiredBooks = _unitOfWork.TakeOfBook.GetListAll()
+                .Where(x => x.UserId == userCheck.Id && x.IsRequest == true).ToList();
+            if (desiredBooks.Count == 0)
+            {
+                throw new Exception("Belirtilen Kullanıcının kitap isteği bulunamadı.");
+            }
+
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            };
+            return Ok(JsonSerializer.Serialize(desiredBooks, options));
         }
 
 

@@ -30,12 +30,37 @@ else
                         <p class="card-text">@item.BookDescription</p>
                     </div>
                     <div class="card-footer">
-                        <form method="post" action="/Book/Delete/@item.Id">
-                            <button type="submit" class="btn btn-warning">Talep Et</button>
-                        </form>
+                        <td><a onclick="takeBook(@item.Id)" class="badge badge-warning">Talep Et</a></td>
                     </div>
                 </div>
             </div>
         }
     </div>
 }
+
+<script>
+    function takeBook(bookId) {
+        swal({
+            title: "Emin Misin?",
+            text: "Bu kitabı almak istiyor musunuz?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/Customer/TakeBook/" + bookId;
+
+                var hiddenField = document.createElement("input");
+                hiddenField.type = "hidden";
+                hiddenField.name = "id";
+                hiddenField.value = bookId;
+
+                form.appendChild(hiddenField);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
