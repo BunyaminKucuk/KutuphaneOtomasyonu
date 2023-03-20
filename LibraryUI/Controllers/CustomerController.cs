@@ -74,7 +74,7 @@ namespace LibraryUI.Controllers
             var responseMessage = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/Book/TakeBook"), model);
             if (responseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("TakeBookList", "Book");
+                return RedirectToAction("TakeBook", "Book");
             }
             return View();
         }

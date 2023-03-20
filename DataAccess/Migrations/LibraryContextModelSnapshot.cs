@@ -40,6 +40,9 @@ namespace DataAccess.Migrations
                     b.Property<string>("BookPage")
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("BookStatus")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("BookType")
                         .HasColumnType("longtext");
 
@@ -66,11 +69,14 @@ namespace DataAccess.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("BookStatus")
+                    b.Property<bool?>("BookStatus")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("EndOnUtc")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool?>("IsRequest")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("StartOnUtc")
                         .HasColumnType("datetime(6)");
@@ -171,9 +177,6 @@ namespace DataAccess.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
@@ -183,9 +186,6 @@ namespace DataAccess.Migrations
 
                     b.Property<Guid>("IdentityId")
                         .HasColumnType("char(36)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");

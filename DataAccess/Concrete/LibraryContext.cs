@@ -22,7 +22,7 @@ namespace DataAccess.Concrete
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("Server=localhost;Database=LibraryDb;User=root;Password=123456", new MySqlServerVersion(new Version(8, 0, 21)));
+                optionsBuilder.UseMySql("Server=77.245.150.35;Database=library;User=volkan; Password=Tekn0sa1.?!;Charset=utf8", new MySqlServerVersion(new Version(8, 0, 21)));
             }
         }
 
@@ -45,20 +45,7 @@ namespace DataAccess.Concrete
                     .IsRequired();
             });
 
-            builder.Entity<TakeOfBook>(takeOfBook =>
-            {
-                takeOfBook.HasKey(x => new { x.UserId, x.BookId });
-
-                takeOfBook.HasOne(x => x.Book)
-                    .WithMany(y => y.TakeOfBooks)
-                    .HasForeignKey(x => x.Id)
-                    .IsRequired();
-
-                takeOfBook.HasOne(x => x.User)
-                    .WithMany(y => y.TakeOfBooks)
-                    .HasForeignKey(x => x.Id)
-                    .IsRequired();
-            });
+            
 
             foreach (var foreignKey in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
