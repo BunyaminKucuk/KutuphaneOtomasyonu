@@ -22,14 +22,25 @@ namespace LibraryUI.Controllers
 
             var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var responseMessage = _httpClient.GetAsync("https://localhost:7299/api/Book/GetUserBooks?userId=" + userId).GetAwaiter().GetResult();
+            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Book/GetUserBooks?userId=" + userId);
+
             if (responseMessage.IsSuccessStatusCode)
             {
-                var jsonString = responseMessage.Content.ToJson();
+                var jsonString = await responseMessage.Content.ReadAsStringAsync();
                 var books = JsonConvert.DeserializeObject<List<Book>>(jsonString);
                 return View(books);
+
             }
+
             return View();
+            //var responseMessage = _httpClient.GetAsync("https://localhost:7299/api/Book/GetUserBooks?userId=" + userId).GetAwaiter().GetResult();
+            //if (responseMessage.IsSuccessStatusCode)
+            //{
+            //    var jsonString = responseMessage.Content.ToJson();
+            //    var books = JsonConvert.DeserializeObject<List<Book>>(jsonString);
+            //    return View(books);
+            //}
+            //return View();
         }
 
 
@@ -74,7 +85,7 @@ namespace LibraryUI.Controllers
             var responseMessage = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/Book/TakeBook"), model);
             if (responseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("TakeBookList", "Book");
+                return RedirectToAction("TakeBook", "Book");
             }
             return View();
         }

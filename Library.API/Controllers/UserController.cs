@@ -155,7 +155,7 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("AddRoleToUser")]
-        public async Task<IActionResult> AddRoleToUser([FromBody] AddRoleToUserModel model)
+        public async Task<IActionResult> AddRoleToUser([FromBody]AddRoleToUserModel model)
         {
             try
             {
@@ -304,12 +304,12 @@ namespace Library.API.Controllers
             }
         }
 
-        [HttpGet("Search")]
-        public async Task<IActionResult> Search(string query)
-        {
-            var users = _unitOfWork.User.GetListAll().Where(u => u.Name.Contains(query) || u.Email.Contains(query) || u.UserName.Contains(query)).ToList();
-            return Ok(users);
-        }
+        //[HttpGet("Search")]
+        //public async Task<IActionResult> Search(string query)
+        //{
+        //    var users = _unitOfWork.User.GetListAll().Where(u => u.Name.Contains(query) || u.Email.Contains(query) || u.UserName.Contains(query)).ToList();
+        //    return Ok(users);
+        //}
 
         #endregion
 

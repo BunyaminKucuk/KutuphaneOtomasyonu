@@ -210,7 +210,6 @@ namespace Library.API.Controllers
                     throw new Exception("Identity kullanıcısı bulunamadı");
                 }
 
-
                 TakeOfBook takeOfBook = new TakeOfBook();
 
                 takeOfBook.UserId = model.UserId;
@@ -218,10 +217,11 @@ namespace Library.API.Controllers
                 takeOfBook.StartOnUtc = DateTime.Now;
                 takeOfBook.IsRequest = false;
                 takeOfBook.BookStatus = true;
+                //aga foreign key ile bağlıysa o tabloya 1 kere insert atılmaz mı ? ya bookid yanlış böyle bir book yok yada hali hazırda o book ile işlem yapılmış bi kontrol et 
 
                 _unitOfWork.TakeOfBook.Insert(takeOfBook);
                 _unitOfWork.SaveChanges();
-
+                //dene bakam
             }
             catch (Exception ex)
             {
@@ -273,9 +273,10 @@ namespace Library.API.Controllers
                 {
                     UserName = l.User.UserName,
                     BookName = l.Book.BookName,
-                    StartOnUtc = l.StartOnUtc
+                    StartOnUtc = l.StartOnUtc,
+                    BookStatus = l.BookStatus
                 })
-                .ToList();
+                .ToList().Where(x => x.StartOnUtc != null && x.BookStatus == true);
 
             return Ok(loans);
         }

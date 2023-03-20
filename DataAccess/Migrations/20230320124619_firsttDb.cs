@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class firstDatabase : Migration
+    public partial class firsttDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,8 +46,6 @@ namespace DataAccess.Migrations
                     IdentityId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -98,7 +96,8 @@ namespace DataAccess.Migrations
                     BookImageUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedOnUtc = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Deleted = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    BookStatus = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -270,20 +269,21 @@ namespace DataAccess.Migrations
                     BookId = table.Column<int>(type: "int", nullable: false),
                     StartOnUtc = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     EndOnUtc = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    BookStatus = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    IsRequest = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    BookStatus = table.Column<bool>(type: "tinyint(1)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TakeOfBooks", x => new { x.UserId, x.BookId });
+                    table.PrimaryKey("PK_TakeOfBooks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TakeOfBooks_Books_Id",
-                        column: x => x.Id,
+                        name: "FK_TakeOfBooks_Books_BookId",
+                        column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_TakeOfBooks_Users_Id",
-                        column: x => x.Id,
+                        name: "FK_TakeOfBooks_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -328,9 +328,14 @@ namespace DataAccess.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_TakeOfBooks_Id",
+                name: "IX_TakeOfBooks_BookId",
                 table: "TakeOfBooks",
-                column: "Id");
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TakeOfBooks_UserId",
+                table: "TakeOfBooks",
+                column: "UserId");
         }
 
         /// <inheritdoc />
