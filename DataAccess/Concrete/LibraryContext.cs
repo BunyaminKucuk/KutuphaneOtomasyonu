@@ -17,6 +17,15 @@ namespace DataAccess.Concrete
 
         }
 
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseMySql("Server=localhost;Database=LibraryDb;User=root;Password=123456", new MySqlServerVersion(new Version(8, 0, 21)));
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
