@@ -1,18 +1,18 @@
-﻿@using Entity.Concrete
-@model List<Book>
+﻿@using Library.API.Model
+@model List<LoanModel>
 
 @{
-    ViewData["Title"] = "TakeBookList";
+    ViewData["Title"] = "ApproveUserBookList";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
 
 @if (Model == null || Model.Count == 0)
 {
     <div class="alert alert-warning">
         Henüz herhangi bir kitap alınmamış.
     </div>
-    <a href="/Customer/Index" class="btn btn-primary">Kitap İste</a>
+    <a href="/Customer/Index" class="btn btn-primary">Kitap Al</a>
+
 }
 else
 {
@@ -29,21 +29,22 @@ else
                         <p class="card-text">@item.BookName.</p>
                         <p class="card-text">@item.BookType</p>
                         <p class="card-text">@item.BookDescription</p>
+                        <p class="card-text">@item.BookId</p>
+                        <p class="card-text">@item.UserId</p>
                     </div>
                     <div class="card-footer">
-                        <td><a onclick="deleteRequestBook(@item.Id)" class="badge badge-danger">Listeden Çıkar</a></td>
+                        <td><a onclick="update(@item.BookId)" class="badge badge-success">Kitabı ver</a></td>
                     </div>
                 </div>
             </div>
         }
     </div>
-
 }
 <script>
-    function deleteRequestBook(bookId) {
+    function update(bookId) {
         swal({
             title: "Emin Misin?",
-            text: "Bu kitabı çıkarmak istiyor musunuz?",
+            text: "Bu kitabı iade etmek istiyor musunuz?",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -51,7 +52,7 @@ else
             if (willDelete) {
                 var form = document.createElement("form");
                 form.method = "POST";
-                form.action = "/Customer/DeleteRequestBook/" + bookId;
+                form.action = "/Book/ApproveUserBookList/" + bookId;
 
                 var hiddenField = document.createElement("input");
                 hiddenField.type = "hidden";

@@ -35,7 +35,7 @@
                 </a>
             </li>
         }
-        @if (ViewBag.Role == "Librarian")
+        @if (ViewBag.Role == "Admin" || ViewBag.Role == "Librarian")
         {
             <li class="nav-item">
                 <a class="nav-link" href="/Book/BookList">
@@ -47,6 +47,12 @@
                 <a class="nav-link" href="/Book/AllInfoTakeBook">
                     <span class="menu-title">Kullanıcı-Kitap</span>
                     <i class="mdi mdi-book-multiple-plus menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Book/ApproveUserBookList">
+                    <span class="menu-title">İstek Kitaplar</span>
+                    <i class="mdi mdi-book-multiple-minus menu-icon"></i>
                 </a>
             </li>
         }
@@ -63,7 +69,7 @@
                     <span class="menu-title">Kitaplar</span>
                     <i class="mdi mdi-book-open-outline menu-icon"></i>
                 </a>
-            </li>   
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="/Customer/TakeBookList">
                     <span class="menu-title">İstekte Bulunan Kitaplar</span>

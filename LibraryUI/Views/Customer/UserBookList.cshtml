@@ -28,10 +28,37 @@ else
                         <p class="card-text">@item.BookType</p>
                         <p class="card-text">@item.BookDescription</p>
                     </div>
+                    <div class="card-footer">
+                        <td><a onclick="deleteBook(@item.Id)" class="badge badge-success">İade Et</a></td>
+                    </div>
                 </div>
             </div>
-            <td><a href="Customer/DeleteUserBook/@item.Id" class="badge badge-danger">Sil</a></td>
         }
     </div>
-
 }
+<script>
+    function deleteBook(bookId) {
+        swal({
+            title: "Emin Misin?",
+            text: "Bu kitabı iade etmek istiyor musunuz?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/Customer/DeleteUserBook/" + bookId;
+
+                var hiddenField = document.createElement("input");
+                hiddenField.type = "hidden";
+                hiddenField.name = "id";
+                hiddenField.value = bookId;
+
+                form.appendChild(hiddenField);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>

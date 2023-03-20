@@ -85,7 +85,7 @@ else
                                                     <span style="color: red;">Pasif</span>
                                                 }
                                             </td>
-                                            <td><a onclick="deleteBook(@item.Id)" class="badge badge-danger">Sil</a></td>
+                                            <td><a onclick="deleteUser(@item.Id)" class="badge badge-danger">Sil</a></td>
                                             <td><a href="/Role/AddRoleToUser/@item.Id" class="badge badge-success">Role Ekle</a></td>
                                             <td><a href="/Admin/UserEdit/@item.Id" class="badge badge-info">Düzenle</a></td>
                                         </tr>
@@ -112,7 +112,7 @@ else
             if (willDelete) {
                 var form = document.createElement("form");
                 form.method = "POST";
-                form.action = "/Admin/BookDelete/" + id;
+                form.action = "/Admin/UserDelete/" + id;
 
                 var hiddenField = document.createElement("input");
                 hiddenField.type = "hidden";

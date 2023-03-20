@@ -26,25 +26,12 @@ namespace LibraryUI.Controllers
         {
             var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var responseFilter = await _httpClient.GetAsync("https://localhost:7299/api/User/Search?query=" + query);
 
-            if (responseFilter.IsSuccessStatusCode)
-            {
-                var jsonStringFilter = await responseFilter.Content.ReadAsStringAsync();
-                var valuesFilter = JsonConvert.DeserializeObject<List<User>>(jsonStringFilter);
-                return View(valuesFilter);
-            }
-            else
-            {
-                var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/User/GetAllUsers");
+            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/User/GetAllUsers");
 
-                var jsonString = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<User>>(jsonString);
-                return View(values);
-
-            }
-
-            return View();
+            var jsonString = await responseMessage.Content.ReadAsStringAsync();
+            var values = JsonConvert.DeserializeObject<List<User>>(jsonString);
+            return View(values);
         }
 
         [Authorize(Policy = "AdminPolicy")]
