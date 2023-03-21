@@ -1,15 +1,13 @@
 ﻿using Entity.Concrete;
 using Library.API.Model;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 
 namespace LibraryUI.Controllers
 {
-    [Authorize(Policy = "LibraryPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     public class BookController : BaseController
     {
         private readonly HttpClient _httpClient = new HttpClient();
@@ -36,7 +34,7 @@ namespace LibraryUI.Controllers
         {
             var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/User/GetAllUsers");
+            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/User/GetAllActiveCustomers");
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonString = await responseMessage.Content.ReadAsStringAsync();
@@ -164,23 +162,27 @@ namespace LibraryUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ApproveUserBookList(LoanModel loanModel)
+        public async Task<IActionResult> ApproveUserBookList(LoanModel model)
         {
-            LoanModel model=new LoanModel();
             var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
+
             var responseMessage = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/Book/ApproveUserBookList"), model);
+
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonString = await responseMessage.Content.ReadAsStringAsync();
-                var value = JsonConvert.DeserializeObject<Book>(jsonString);
-                return View(value);
+                var books = JsonConvert.DeserializeObject<List<LoanModel>>(jsonString);
+                return View(books);
 
             }
 
+
+
             return View();
         }
+
     }
 }
 

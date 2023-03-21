@@ -12,7 +12,6 @@
         Henüz herhangi bir kitap alınmamış.
     </div>
     <a href="/Customer/Index" class="btn btn-primary">Kitap Al</a>
-
 }
 else
 {
@@ -33,15 +32,16 @@ else
                         <p class="card-text">@item.UserId</p>
                     </div>
                     <div class="card-footer">
-                        <td><a onclick="update(@item.BookId)" class="badge badge-success">Kitabı ver</a></td>
+                        <td><a onclick="update('@item.BookId', '@item.UserId')" class="badge badge-success">Kitabı ver</a></td>
                     </div>
                 </div>
             </div>
         }
     </div>
 }
+
 <script>
-    function update(bookId) {
+    function update(bookId, userId) {
         swal({
             title: "Emin Misin?",
             text: "Bu kitabı iade etmek istiyor musunuz?",
@@ -52,14 +52,20 @@ else
             if (willDelete) {
                 var form = document.createElement("form");
                 form.method = "POST";
-                form.action = "/Book/ApproveUserBookList/" + bookId;
+                form.action = "/Book/ApproveUserBookList";
 
-                var hiddenField = document.createElement("input");
-                hiddenField.type = "hidden";
-                hiddenField.name = "id";
-                hiddenField.value = bookId;
+                var bookIdField = document.createElement("input");
+                bookIdField.type = "hidden";
+                bookIdField.name = "model.BookId";
+                bookIdField.value = bookId;
 
-                form.appendChild(hiddenField);
+                var userIdField = document.createElement("input");
+                userIdField.type = "hidden";
+                userIdField.name = "model.UserId";
+                userIdField.value = userId;
+
+                form.appendChild(bookIdField);
+                form.appendChild(userIdField);
                 document.body.appendChild(form);
                 form.submit();
             }

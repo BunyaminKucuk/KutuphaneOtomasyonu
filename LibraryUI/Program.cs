@@ -47,6 +47,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole(RoleType.Customer.GetDisplayName()));
 });
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -50,6 +50,30 @@ namespace Library.API.Controllers
             }
         }
 
+        [HttpGet("GetAllActiveCustomers")]
+        public IActionResult GetAllActiveCustomers()
+        {
+            try
+            {
+                var users = _unitOfWork.User.GetListAll().Where(x => x.Deleted == false && x.IsActive == true).ToList();
+                var customerUsers = new List<User>();
+                foreach (var item in users)
+                {
+                    var appUser = _userManager.Users.Where(x => x.IdentityId == item.IdentityId).FirstOrDefault();
+                    var userRoles = _userManager.GetRolesAsync(appUser).Result.FirstOrDefault();
+                    if (userRoles == "Customer")
+                    {
+                        customerUsers.Add(item);
+                    }
+                }
+                return Ok(customerUsers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
 
         [HttpPost("AddNewUser")]

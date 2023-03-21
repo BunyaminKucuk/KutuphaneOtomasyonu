@@ -58,8 +58,6 @@ namespace LibraryUI.Controllers
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                    // redirect to appropriate page based on user role
-
                     var responseRole = await _httpClient.PostAsJsonAsync(new Uri("https://localhost:7299/api/Role/GetUserRoleAndIsActive"), model);
                     var jsonStringRole = await responseRole.Content.ReadAsStringAsync();
                     dynamic response = JsonConvert.DeserializeObject(jsonStringRole);

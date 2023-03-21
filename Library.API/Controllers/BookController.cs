@@ -51,7 +51,7 @@ namespace Library.API.Controllers
                 foreach (var item in list)
                 {
                     var unreturnedLoansForBook = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
-                        .Where(l => l.BookId == item.Id && l.BookStatus == false);
+                        .Where(l => (l.BookId == item.Id && l.BookStatus == true) || (l.BookId == item.Id && l.IsRequest == true));
                     if (!unreturnedLoansForBook.Any())
                     {
                         response.Add(new Book
@@ -81,50 +81,51 @@ namespace Library.API.Controllers
 
         }
 
-        [HttpGet("UnclaimedBookList")]
-        public IActionResult UnclaimedBookList()
-        {
-            List<Book> response = new List<Book>();
-            try
-            {
+        //[HttpGet("UnclaimedBookList")]
+        //public IActionResult UnclaimedBookList()
+        //{
+        //    List<Book> response = new List<Book>();
+        //    try
+        //    {
 
-                var list = _unitOfWork.Book.GetListAll().Where(x => x.Deleted == false);
-                if (list.Count() == 0)
-                {
-                    throw new Exception("Kitap bilgileri alınamadı.");
-                }
-                foreach (var item in list)
-                {
-                    var unreturnedLoansForBook = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
-                        .Where(l => l.BookId == item.Id && l.BookStatus == false);
-                    if (!unreturnedLoansForBook.Any())
-                    {
-                        response.Add(new Book
-                        {
-                            Id = item.Id,
-                            BookName = item.BookName,
-                            BookISBN = item.BookISBN,
-                            BookPage = item.BookPage,
-                            BookType = item.BookType,
-                            Deleted = item.Deleted,
-                            BookWriter = item.BookWriter,
-                            CreatedOnUtc = item.CreatedOnUtc,
-                            BookDescription = item.BookDescription,
-                            BookImageUrl = item.BookImageUrl,
-                            BookStatus = item.BookStatus
-                        });
-                    }
-                }
+        //        var list = _unitOfWork.Book.GetListAll().Where(x => x.Deleted == false);
+        //        if (list.Count() == 0)
+        //        {
+        //            throw new Exception("Kitap bilgileri alınamadı.");
+        //        }
+        //        foreach (var item in list)
+        //        {
+        //            var unreturnedLoansForBook = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
+        //                .Where(l => (l.BookId == item.Id && l.BookStatus == true) || (l.BookId == item.Id && l.IsRequest == true));
+        //            if (!unreturnedLoansForBook.Any())
+        //            {
+        //                response.Add(new Book
+        //                {
+        //                    Id = item.Id,
+        //                    BookName = item.BookName,
+        //                    BookISBN = item.BookISBN,
+        //                    BookPage = item.BookPage,
+        //                    BookType = item.BookType,
+        //                    Deleted = item.Deleted,
+        //                    BookWriter = item.BookWriter,
+        //                    CreatedOnUtc = item.CreatedOnUtc,
+        //                    BookDescription = item.BookDescription,
+        //                    BookImageUrl = item.BookImageUrl,
+        //                    BookStatus = item.BookStatus
+        //                });
+        //            }
+        //        }
+        //        return Ok(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return Ok(response);
+        //    return BadRequest();
 
+        //}
 
-        }
 
         [HttpPost("AddNewBook")]
         public IActionResult AddNewBook([FromBody] Book model)
@@ -454,7 +455,6 @@ namespace Library.API.Controllers
         [HttpPost("ApproveUserBookList")]
         public IActionResult ApproveUserBookList([FromBody] LoanModel model)
         {
-            TakeOfBook book = new TakeOfBook();
             try
             {
                 var checkBook = _unitOfWork.Book.GetListAll().Where(x => x.Id == model.BookId);
@@ -463,25 +463,37 @@ namespace Library.API.Controllers
                     throw new Exception("Belirtilen  kitap bulunamadı.");
                 }
 
-                book.BookId = model.BookId;
-                book.UserId = model.UserId;
-                book.IsRequest = false;
-                book.BookStatus = true;
-                book.StartOnUtc = DateTime.Now;
-                _unitOfWork.TakeOfBook.Update(book);
+                var checkTakeOfBook = _unitOfWork.TakeOfBook.GetListAll()
+                    .Where(x => x.BookId == model.BookId && x.UserId == model.UserId).FirstOrDefault();
+                checkTakeOfBook.BookId = model.BookId;
+                checkTakeOfBook.UserId = model.UserId;
+                checkTakeOfBook.IsRequest = false;
+                checkTakeOfBook.BookStatus = true;
+                checkTakeOfBook.StartOnUtc = DateTime.Now;
+                _unitOfWork.TakeOfBook.Update(checkTakeOfBook);
                 _unitOfWork.SaveChanges();
 
-                var desiredBooks = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
-                    .Where(x => x.IsRequest == true)
-                    .Select(x => x.Book)
-                    .ToList();
+                var loans = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
+                    .Select(l => new
+                    {
+                        UserName = l.User.UserName,
+                        BookName = l.Book.BookName,
+                        IsRequest = l.IsRequest,
+                        UserId = l.UserId,
+                        BookId = l.BookId,
+                        BookWriter = l.Book.BookWriter,
+                        BookType = l.Book.BookType,
+                        BookDescription = l.Book.BookDescription
+                    })
+                    .ToList().Where(x => x.IsRequest == true);
+
 
                 var options = new JsonSerializerOptions
                 {
                     ReferenceHandler = ReferenceHandler.Preserve
                 };
 
-                return Ok(JsonSerializer.Serialize(desiredBooks, options));
+                return Ok(JsonSerializer.Serialize(loans, options));
             }
             catch (Exception e)
             {
