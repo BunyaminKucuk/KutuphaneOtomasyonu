@@ -11,6 +11,7 @@ namespace LibraryUI.Controllers
     {
         private readonly HttpClient _httpClient = new HttpClient();
 
+        [Authorize(Policy = "AdminPolicy")]
         public IActionResult Index()
         {
             return View();
@@ -59,12 +60,8 @@ namespace LibraryUI.Controllers
             var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var responseMessage = await _httpClient.PostAsJsonAsync("https://localhost:7299/api/User/UpdateUser", model);
+            return RedirectToAction("UserList", "Admin");
 
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                return RedirectToAction("UserList", "Admin");
-            }
-            return View();
         }
 
         [Authorize(Policy = "AdminPolicy")]

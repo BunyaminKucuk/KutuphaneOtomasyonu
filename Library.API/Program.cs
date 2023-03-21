@@ -6,7 +6,6 @@ using Entity.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using System.Text;
@@ -24,10 +23,6 @@ builder.Services.AddMvc().AddJsonOptions(x =>
 {
     x.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 });
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-//builder.Services.AddDbContext<LibraryContext>(options =>
-//    options.UseMySql(builder.Configuration.GetConnectionString(connectionString), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString(connectionString))));
 
 builder.Services.AddDbContext<LibraryContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
     b => b.CommandTimeout(120).EnableStringComparisonTranslations(true)
@@ -45,9 +40,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     .AddEntityFrameworkStores<LibraryContext>()
     .AddDefaultTokenProviders();
 
-//// Adding Authentication
 
-// Adding Jwt Bearer
 builder.Services.AddAuthentication()
     .AddJwtBearer(cfg =>
     {
@@ -76,9 +69,6 @@ builder.Services.AddAuthentication()
 
 
     });
-
-
-
 
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())

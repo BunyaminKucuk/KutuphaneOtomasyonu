@@ -1,0 +1,96 @@
+﻿@using Entity.Concrete
+@model List<Book>
+
+@{
+    ViewData["Title"] = "AssignableBookList";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="alert alert-warning">
+        Henüz herhangi bir kitap ataması yapılmamış.
+    </div>
+    <br />
+    <a href="/Book/AddBook" class="btn btn-primary">Kitap Atama Yap</a>
+}
+else
+{
+    <body>
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body table-responsive">
+                        <h4 class="card-title">Kitaplar Tablosu</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Kitap Adı</th>
+                                        <th>Yazar Adı</th>
+                                        <th>Kitap Türü</th>
+                                        <th>Kitap Açıklaması</th>
+                                        <th>Kitap ISBN</th>
+                                        <th>Kitap Resim Yolu</th>
+                                        <th>Kitap Sayfa</th>
+                                        <th>Ouluturlma Tarihi</th>
+                                        <th>Sil</th>
+                                        <th>Kitabı Kullanıcıya Ver</th>
+                                        <th>Düzenle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.BookName</td>
+                                            <td>@item.BookWriter</td>
+                                            <td>@item.BookType</td>
+                                            <td>@item.BookDescription</td>
+                                            <td>@item.BookISBN</td>
+                                            <td>@item.BookImageUrl</td>
+                                            <td>@item.BookPage</td>
+                                            <td>@(((DateTime)item.CreatedOnUtc).ToString("dd.MM.yyyy"))</td>
+                                            <td><a onclick="deleteBook(@item.Id)" class="badge badge-danger">Sil</a></td>
+                                            <td><a href="/Book/TakeOnBook/@item.Id" class="badge badge-success d-block d-md-inline">Kitabı Ver</a></td>
+                                            <td><a href="/Book/BookEdit/@item.Id" class="badge badge-info d-block d-md-inline">Düzenle</a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <a href="/Book/AddBook" class="btn btn-primary">Kitap Ekle</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+}
+
+<script>
+    function deleteBook(id) {
+        swal({
+            title: "Emin Misin?",
+            text: "Bu kullanıcıyı silmek istiyor musunuz?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/Book/BookDelete/" + id;
+
+                var hiddenField = document.createElement("input");
+                hiddenField.type = "hidden";
+                hiddenField.name = "id";
+                hiddenField.value = id;
+
+                form.appendChild(hiddenField);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>

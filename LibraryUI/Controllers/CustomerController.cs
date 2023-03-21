@@ -37,7 +37,7 @@ namespace LibraryUI.Controllers
         {
             var token = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Authentication).FirstOrDefault().Value;
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Book/GetBookList");
+            var responseMessage = await _httpClient.GetAsync("https://localhost:7299/api/Book/AssignableBookList");
             var jsonString = await responseMessage.Content.ReadAsStringAsync();
             var values = JsonConvert.DeserializeObject<List<Book>>(jsonString);
             return View(values);

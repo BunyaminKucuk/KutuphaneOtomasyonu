@@ -1,5 +1,4 @@
 ﻿using DataAccess.Abstract;
-using DataAccess.Concrete;
 using Entity.Concrete;
 using Entity.Identity;
 using Library.API.Model;
@@ -7,9 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Library.API.Controllers
 {
@@ -35,9 +33,46 @@ namespace Library.API.Controllers
         #endregion
 
         #region Methods
-
         [HttpGet("GetBookList")]
         public IList<Book> GetBookList()
+        {
+            List<Book> response = new List<Book>();
+            try
+            {
+                var list = _unitOfWork.Book.GetListAll().Where(x => x.Deleted == false);
+                if (list.Count() == 0)
+                {
+                    throw new Exception("Personel bilgileri alınamadı.");
+                }
+                foreach (var item in list)
+                {
+                    response.Add(new Book
+                    {
+                        Id = item.Id,
+                        BookName = item.BookName,
+                        BookISBN = item.BookISBN,
+                        BookPage = item.BookPage,
+                        BookType = item.BookType,
+                        BookStatus = item.BookStatus,
+                        Deleted = item.Deleted,
+                        BookWriter = item.BookWriter,
+                        CreatedOnUtc = item.CreatedOnUtc,
+                        BookDescription = item.BookDescription,
+                        BookImageUrl = item.BookImageUrl
+
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return response;
+        }
+
+        [HttpGet("AssignableBookList")]
+        public IList<Book> AssignableBookList()
         {
             List<Book> response = new List<Book>();
             try
@@ -80,52 +115,6 @@ namespace Library.API.Controllers
             }
 
         }
-
-        //[HttpGet("UnclaimedBookList")]
-        //public IActionResult UnclaimedBookList()
-        //{
-        //    List<Book> response = new List<Book>();
-        //    try
-        //    {
-
-        //        var list = _unitOfWork.Book.GetListAll().Where(x => x.Deleted == false);
-        //        if (list.Count() == 0)
-        //        {
-        //            throw new Exception("Kitap bilgileri alınamadı.");
-        //        }
-        //        foreach (var item in list)
-        //        {
-        //            var unreturnedLoansForBook = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
-        //                .Where(l => (l.BookId == item.Id && l.BookStatus == true) || (l.BookId == item.Id && l.IsRequest == true));
-        //            if (!unreturnedLoansForBook.Any())
-        //            {
-        //                response.Add(new Book
-        //                {
-        //                    Id = item.Id,
-        //                    BookName = item.BookName,
-        //                    BookISBN = item.BookISBN,
-        //                    BookPage = item.BookPage,
-        //                    BookType = item.BookType,
-        //                    Deleted = item.Deleted,
-        //                    BookWriter = item.BookWriter,
-        //                    CreatedOnUtc = item.CreatedOnUtc,
-        //                    BookDescription = item.BookDescription,
-        //                    BookImageUrl = item.BookImageUrl,
-        //                    BookStatus = item.BookStatus
-        //                });
-        //            }
-        //        }
-        //        return Ok(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-
-        //    return BadRequest();
-
-        //}
-
 
         [HttpPost("AddNewBook")]
         public IActionResult AddNewBook([FromBody] Book model)
@@ -271,11 +260,9 @@ namespace Library.API.Controllers
                 takeOfBook.StartOnUtc = DateTime.Now;
                 takeOfBook.IsRequest = false;
                 takeOfBook.BookStatus = true;
-                //aga foreign key ile bağlıysa o tabloya 1 kere insert atılmaz mı ? ya bookid yanlış böyle bir book yok yada hali hazırda o book ile işlem yapılmış bi kontrol et 
 
                 _unitOfWork.TakeOfBook.Insert(takeOfBook);
                 _unitOfWork.SaveChanges();
-                //dene bakam
             }
             catch (Exception ex)
             {
@@ -420,10 +407,6 @@ namespace Library.API.Controllers
         {
             try
             {
-                //var book = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
-                //    .Where(x => x.IsRequest == true)
-                //    .Select(x => x.Book)
-                //    .ToList();
                 var loans = _unitOfWork.TakeOfBook.GetUnreturnedBookLoans()
                     .Select(l => new
                     {

@@ -15,13 +15,12 @@
                     <input type="text" asp-for="@Model.Name" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputUserName">Kullanıcı Adı</label>
-                    <input type="text" asp-for="@Model.UserName" class="form-control" />
+                    <input type="hidden" asp-for="@Model.UserName" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail">Mail Adresi</label>
                     <input type="text" asp-for="@Model.Email" class="form-control" />
-                    <input asp-for="IdentityId" hidden/>
+                    <input asp-for="IdentityId" hidden />
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail">Kullanıcı Durumu</label>
