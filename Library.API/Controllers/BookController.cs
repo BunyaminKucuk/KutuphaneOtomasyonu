@@ -203,7 +203,7 @@ namespace Library.API.Controllers
             try
             {
                 var checkBook = _unitOfWork.Book.GetListAll().Where(x => x.Id == bookId).FirstOrDefault();
-
+                var takeOfBooks = _unitOfWork.TakeOfBook.GetListAll().Where(x => x.BookId == bookId).ToList();
                 if (checkBook == null)
                 {
                     throw new Exception("Belirtilen kitap bulunamadı.");
@@ -222,6 +222,10 @@ namespace Library.API.Controllers
                 checkBook.BookDescription = checkBook.BookDescription;
                 checkBook.BookStatus = checkBook.BookStatus;
                 _unitOfWork.Book.Update(checkBook);
+                foreach (var takeOfBook in takeOfBooks)
+                {
+                    _unitOfWork.TakeOfBook.Delete(takeOfBook);
+                }
                 _unitOfWork.SaveChanges();
             }
             catch (Exception ex)

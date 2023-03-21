@@ -221,6 +221,7 @@ namespace Library.API.Controllers
             try
             {
                 var checkUser = _unitOfWork.User.GetListAll().Where(x => x.Id == userId).FirstOrDefault();
+                var takeOfBooks = _unitOfWork.TakeOfBook.GetListAll().Where(x => x.UserId == userId).ToList();
 
                 if (checkUser == null)
                 {
@@ -240,6 +241,10 @@ namespace Library.API.Controllers
                 checkUser.Deleted = true;
 
                 _unitOfWork.User.Update(checkUser);
+                foreach (var takeOfBook in takeOfBooks)
+                {
+                    _unitOfWork.TakeOfBook.Delete(takeOfBook);
+                }
                 _unitOfWork.SaveChanges();
 
 
